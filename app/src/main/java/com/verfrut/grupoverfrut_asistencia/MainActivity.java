@@ -89,11 +89,7 @@ public class MainActivity extends AppCompatActivity {
             if (acces.equals("admasis")) {
                 Intent midintent = new Intent(MainActivity.this, Admin.class);
                 Bundle mibundle = new Bundle();
-
-
                 mibundle.putString("usuario",acces);
-
-
                 midintent.putExtras(mibundle);
                 startActivity(midintent);
                 super.finish();

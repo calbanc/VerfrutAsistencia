@@ -65,16 +65,12 @@ public class InstalacionFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
-    Button btnaceptar,btnnuevo,btnretirar,btncerrarsesion;
-    TextInputEditText txtnombre_estacion,txtdniresponsable,txtnombreresponsable,txttelefonoresponsable,txtimei,txtmarca,txtmodelo,txttelefono,txtcodigocargo,txtobservacioninstalacion;
+    Button btnaceptar,btnretirar,btncerrarsesion;
+    TextInputEditText txtnombre_estacion;
     TextView txtestacionguardada,txttipoestacion,idempresa,txtid;
     RadioButton rbfija,rbmovil,rbbus;
     private AsyncHttpClient cliente;
-    Spinner spempresa,spzona,spcuartel,spcodbus,spzonaentrega;
-    String imei;
-    TelephonyManager tm;
-
-    static final Integer PHONESTATS = 0x1;
+    Spinner spempresa,spzona,spcuartel,spcodbus;
 
     ProgressDialog progreso;
     public static final String prefencia="prefencia";
@@ -130,15 +126,7 @@ public class InstalacionFragment extends Fragment {
         txtid=vista.findViewById(R.id.txtid);
         btnretirar=vista.findViewById(R.id.btnretirar);
         btncerrarsesion=vista.findViewById(R.id.btncerrarsesion);
-        txtdniresponsable=vista.findViewById(R.id.txtdniresponsable);
-        txtnombreresponsable=vista.findViewById(R.id.txtnombreresponsable);
-        txttelefonoresponsable=vista.findViewById(R.id.txttelefonoresponsable);
-        txtimei=vista.findViewById(R.id.txtimei);
-        txtmarca=vista.findViewById(R.id.txtmarca);
-        txtmodelo=vista.findViewById(R.id.txtmodelo);
-        txttelefono=vista.findViewById(R.id.txttelefono);
-        txtcodigocargo=vista.findViewById(R.id.txtcodigocargo);
-        txtobservacioninstalacion=vista.findViewById(R.id.txtobservacioninstalacion);
+
         cliente=new AsyncHttpClient();
         AsistenciaHelper cn=new AsistenciaHelper(getContext(),"RRHH",null,1);
         SQLiteDatabase db=cn.getWritableDatabase();
@@ -146,25 +134,6 @@ public class InstalacionFragment extends Fragment {
         try{
             mostrarnombreestacion();
             cargarempresas();
-
-
-            int permiso=ContextCompat.checkSelfPermission(getContext(),Manifest.permission.READ_PHONE_STATE);
-
-            if(permiso==PackageManager.PERMISSION_GRANTED){
-                tm=(TelephonyManager)getActivity().getSystemService(Context.TELEPHONY_SERVICE);
-                imei=tm.getDeviceId().toString();
-            }else{
-                ActivityCompat.requestPermissions(getActivity(),new String[]{Manifest.permission.READ_PHONE_STATE},123);
-            }
-
-
-
-
-            //consultarPermiso(Manifest.permission.READ_PHONE_STATE, PHONESTATS);
-            System.out.println("IMEI DEL TELEFONO"+imei);
-            txtimei.setText(imei);
-
-
         }catch (Exception e){
             System.out.println("MOSTRAR PERMISO"+e.getMessage());
             Toast.makeText(getContext(),"MOSTRAR PERMISO"+e.getMessage(),Toast.LENGTH_SHORT).show();

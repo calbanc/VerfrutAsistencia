@@ -222,6 +222,23 @@ public class ASISTENCIA extends AppCompatActivity {
 
 
 
+            handler.postDelayed(new Runnable() {
+                public void run() {
+
+
+
+                    if(isNetDisponible()) {
+                        enviarposicionesservidor();
+
+
+                    }
+
+                    handler.postDelayed(this, 40000);
+                }
+
+            }, 40000);
+
+
 
             handler.postDelayed(new Runnable() {
                 public void run() {
@@ -230,6 +247,18 @@ public class ASISTENCIA extends AppCompatActivity {
                 }
 
             }, 2000);
+
+            handler.postDelayed(new Runnable() {
+                public void run() {
+                    guardaposicion();
+                    handler.postDelayed(this, 20000);
+                }
+
+            }, 2000);
+
+
+
+
 
 
         }catch (Exception e){
@@ -406,10 +435,10 @@ public class ASISTENCIA extends AppCompatActivity {
                                 try{
                                     JSONArray jsonArray=new JSONArray(enviar);
                                     String respuesta=jsonArray.getJSONObject(0).getString("id");
-                                    System.out.println(respuesta+" RESPUESTA DEL SERVIDOR POSICIONES");
+
                                     if(respuesta.equals("REGISTRA")){
                                         String actualizadaestado="UPDATE POSICIONES SET SW_ENVIADO='1' WHERE ID='"+idmarcacion+"'";
-                                        System.out.println("CONSULTA DE ACTUALIZAR posiciones ="+actualizadaestado);
+
                                         db.execSQL(actualizadaestado);
                                     }else{
                                     }
@@ -536,7 +565,7 @@ public class ASISTENCIA extends AppCompatActivity {
     public Boolean isOnlineNet() {
 
         try {
-            Process p = java.lang.Runtime.getRuntime().exec("ping -c 1 192.168.60.8");
+            Process p = java.lang.Runtime.getRuntime().exec("ping -c 1 http://app.verfrut.pe");
 
             int val           = p.waitFor();
             boolean reachable = (val == 0);
@@ -599,10 +628,10 @@ public class ASISTENCIA extends AppCompatActivity {
                                 try{
                                     JSONArray jsonArray=new JSONArray(enviar);
                                     String respuesta=jsonArray.getJSONObject(0).getString("id");
-                                    System.out.println(respuesta+" RESPUESTA DEL SERVIDOR POSICIONES");
+
                                     if(respuesta.equals("REGISTRA")){
                                         String actualizadaestado="UPDATE POSICIONES SET SW_ENVIADO='1' WHERE ID='"+idmarcacion+"'";
-                                        System.out.println("CONSULTA DE ACTUALIZAR posiciones ="+actualizadaestado);
+
                                         db.execSQL(actualizadaestado);
                                     }else{
                                     }
@@ -635,7 +664,7 @@ public class ASISTENCIA extends AppCompatActivity {
     }
 
     private void guardaposicion() {
-        System.out.println("GUARDANDO POSICION");
+
         try{
             AsistenciaHelper cn=new AsistenciaHelper(ASISTENCIA.this,"RRHH",null,1);
             SQLiteDatabase db=cn.getWritableDatabase();
@@ -648,9 +677,8 @@ public class ASISTENCIA extends AppCompatActivity {
             String latitud=txtlatitud.getText().toString();
             String longitud=txtlongitud.getText().toString();
             String velocidad=txtvelocidad.getText().toString();
-            String versionapp="AppRemu2.1";
+            String versionapp="Posiciones";
             String inserta="INSERT INTO POSICIONES(ID,FECHA,HORA,LATITUD,LONGITUD,VELOCIDAD,ESTACION,VERSIONAPP,SW_ENVIADO) VALUES ('"+idmarcacion+"','"+fecha+"','"+hora+"','"+latitud+"','"+longitud+"','"+velocidad+"','"+idequipo+"','"+versionapp+"','0')";
-            System.out.println(inserta);
             db.execSQL(inserta);
 
         }catch (Exception e){
