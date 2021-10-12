@@ -628,13 +628,10 @@ public class InstalacionFragment extends Fragment {
     }
 
     private void empresas(String s) {
-
         ArrayList<Estaciones>listaempresa=new ArrayList<Estaciones>();
         ArrayList<String>listaempresastring=new ArrayList<String>();
-
         try{
             JSONArray json=new JSONArray(s);
-
             for(int i=0;i<json.length();i++){
                 Estaciones empresa=new Estaciones();
                 empresa.setEmpresa(json.getJSONObject(i).getString("IdEmpresa"));
@@ -646,17 +643,10 @@ public class InstalacionFragment extends Fragment {
             for(int i=0;i<listaempresa.size();i++){
                 listaempresastring.add(listaempresa.get(i).getEmpresa()+"-"+listaempresa.get(i).getNombreempresa());
             }
-
-            ArrayAdapter<String> adapter= new ArrayAdapter(getActivity(),android.R.layout.simple_list_item_single_choice
-                    ,listaempresastring);
+            ArrayAdapter<String> adapter= new ArrayAdapter(getActivity(),android.R.layout.simple_list_item_single_choice,listaempresastring);
             spempresa.setAdapter(adapter);
-
         }catch (Exception e){
-
         }
-
-
-
     }
 
     private void retirarlocal(String id,String fecha) {
@@ -689,14 +679,12 @@ public class InstalacionFragment extends Fragment {
         try{
             JSONArray json=new JSONArray(s);
             String sw_validado=json.getJSONObject(0).getString("sw_activo");
-            System.out.println(sw_validado);
             if(sw_validado.equals("0")){
                 nuevo();
             }else{
                 Toast.makeText(getContext(),"NO SE LOGRO RETIRAR EL EQUIPO CORRECTAMENTE",Toast.LENGTH_SHORT).show();
             }
         }catch (Exception e){
-
         }
     }
 
@@ -707,19 +695,14 @@ public class InstalacionFragment extends Fragment {
         progreso.setCancelable(false);
         progreso.setCanceledOnTouchOutside(false);
         progreso.show();
-
-
         String url=Global.url+"swinstalfija.php?idempresa="+cod_emp+"&&ID="+id+"&&TIPO_ESTACION=FIJA"+
                 "&&NOMBRE_ESTACION="+nombre+"&&FECHA_INSTALACION="+fecha+"&&idzona="+cod_zona+"&&idcuartel="+cod_cua;
-        System.out.println(url);
         cliente.post(url, new AsyncHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
                 if (statusCode == 200) {
                     progreso.hide();
-
                     instalacion(new String(responseBody));
-
                 }
             }
             @Override
