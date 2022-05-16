@@ -92,17 +92,20 @@ public class ASISTENCIA extends AppCompatActivity {
         cliente.setTimeout(100000);
 
 
-
         try{
             cargarequipoexistente();
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd"); //dd/MM/yyyy HH:mm:ss
             String fecha = sdf.format(new Date());
-
             mostrarcantidaddemarcacion(fecha);
         }catch (Exception e){
             Toast.makeText(ASISTENCIA.this,"ERROR EN CARGAR EQUIPO EXISTENTE",Toast.LENGTH_SHORT).show();
         }
 
+        try{
+            configuracioncamara();
+        }catch (Exception e){
+            Toast.makeText(ASISTENCIA.this,"ERROR EN CONFIGURACION DE CAMARA",Toast.LENGTH_SHORT).show();
+        }
 
         btncerrar.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -152,7 +155,6 @@ public class ASISTENCIA extends AppCompatActivity {
                                     @Override
                                     public void onClick(View v) {
                                         String pass="Rapel.2020";
-
                                         if(txtclave.getText().toString().equals(pass)){
                                             dialogBuilder.dismiss();
                                             SharedPreferences preferences=getSharedPreferences(prefencia,MODE_PRIVATE);
@@ -167,23 +169,15 @@ public class ASISTENCIA extends AppCompatActivity {
 
                                     }
                                 });
-
                                 dialogBuilder.setView(dialogview);
                                 dialogBuilder.show();
                             }
                         });
                 builder.create().show();
-
-
-
             }
         });
 
-        try{
-            configuracioncamara();
-        }catch (Exception e){
-            Toast.makeText(ASISTENCIA.this,"ERROR EN CONFIGURACION DE CAMARA",Toast.LENGTH_SHORT).show();
-        }
+
 
 
         if (ActivityCompat.checkSelfPermission(ASISTENCIA.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(ASISTENCIA.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -191,7 +185,18 @@ public class ASISTENCIA extends AppCompatActivity {
         } else {
 
             try{
-                locationStart();
+
+                AsistenciaHelper cn=new AsistenciaHelper(ASISTENCIA.this,"RRHH",null,1);
+                SQLiteDatabase db=cn.getWritableDatabase();
+                db.isOpen();
+                String sql="SELECT ESTACION FROM ESTACION WHERE ID='"+txtidequipo.getText().toString()+"' ";
+                Cursor cr=db.rawQuery(sql,null);
+                if(cr.moveToFirst()){
+                    String tipo=cr.getString(0).trim();
+                    if(tipo.equals("BUS")){
+                        locationStart();
+                    }
+                }
             }catch (Exception e){
                 Toast.makeText(ASISTENCIA.this,"ERROR EN LOCATIONSTART",Toast.LENGTH_SHORT).show();
             }
@@ -206,29 +211,32 @@ public class ASISTENCIA extends AppCompatActivity {
         try{
             handler.postDelayed(new Runnable() {
                 public void run() {
-
-
-
                     if(isNetDisponible()) {
                         enviardatosaservidor();
-
-
                     }
-
                     handler.postDelayed(this, 30000);
                 }
 
             }, 30000);
 
 
-
-            handler.postDelayed(new Runnable() {
+           handler.postDelayed(new Runnable() {
                 public void run() {
 
-
-
                     if(isNetDisponible()) {
-                        enviarposicionesservidor();
+
+                        AsistenciaHelper cn=new AsistenciaHelper(ASISTENCIA.this,"RRHH",null,1);
+                        SQLiteDatabase db=cn.getWritableDatabase();
+                        db.isOpen();
+                        String sql="SELECT ESTACION FROM ESTACION WHERE ID='"+txtidequipo.getText().toString()+"' ";
+                        Cursor cr=db.rawQuery(sql,null);
+                        if(cr.moveToFirst()){
+                            String tipo=cr.getString(0).trim();
+                            if(tipo.equals("BUS")){
+                                enviarposicionesservidor();
+                            }
+                        }
+
 
 
                     }
@@ -250,7 +258,19 @@ public class ASISTENCIA extends AppCompatActivity {
 
             handler.postDelayed(new Runnable() {
                 public void run() {
-                    guardaposicion();
+
+                    AsistenciaHelper cn=new AsistenciaHelper(ASISTENCIA.this,"RRHH",null,1);
+                    SQLiteDatabase db=cn.getWritableDatabase();
+                    db.isOpen();
+                    String sql="SELECT ESTACION FROM ESTACION WHERE ID='"+txtidequipo.getText().toString()+"' ";
+                    Cursor cr=db.rawQuery(sql,null);
+                    if(cr.moveToFirst()){
+                        String tipo=cr.getString(0).trim();
+                        if(tipo.equals("BUS")){
+                            guardaposicion();
+                        }
+                    }
+
                     handler.postDelayed(this, 20000);
                 }
 
@@ -682,7 +702,7 @@ public class ASISTENCIA extends AppCompatActivity {
             db.execSQL(inserta);
 
         }catch (Exception e){
-            //Toast.makeText(ASISTENCIA.this,"ERROR GUARDANDO POSICION"+e.getMessage(),Toast.LENGTH_SHORT).show();
+
         }
 
    }
@@ -791,7 +811,6 @@ public class ASISTENCIA extends AppCompatActivity {
             Toast.makeText(ASISTENCIA.this,"ERROR DENTRO DE LOCATIONSTAR"+e.getMessage(), Toast.LENGTH_SHORT).show();
         }
 
-
     }
     public class Localizacion implements LocationListener {
         ASISTENCIA mainActivity;
@@ -897,7 +916,7 @@ public class ASISTENCIA extends AppCompatActivity {
                 txtmensaje.setText("MARCACION REGISTRADA");
 
                 String consulta="SELECT COUNT(DISTINCT(IDMARCACION)) FROM MARCACIONES WHERE FECHA='"+fecha+"'";
-                System.out.println(consulta);
+
                 Cursor cr=db.rawQuery(consulta,null);
                 if(cr.moveToNext()){
                     txtcantidad.setText(cr.getString(0));
@@ -981,7 +1000,16 @@ public class ASISTENCIA extends AppCompatActivity {
                         String dni=resul.rawValue;
 
                         if(dni.length()>7 && dni.length()<=9){
-                            insertardatolocal(dni);
+
+                            try{
+                                int dnis=Integer.parseInt(dni);
+                                insertardatolocal(dni);
+                            }catch (Exception e){
+                                //qr capturado no es un numero
+                                System.out.println("ERROR EN QR LEIDO"+e.getMessage());
+
+                            }
+
 
                         }else{
                            // txtmensaje.setText("CODIGO ESCANEADO NO ES VALIDO");

@@ -28,4 +28,17 @@ public class Global {
     public static String nom_fri;
     public static String url2="https://app.verfrut.cl/app/";
     public static  String url="http://app.verfrut.pe/";
+
+    public static String leecodigo(String texto, String caracter){
+        String[]asc=texto.split(caracter,0);
+        String id=asc[0];
+        return id;
+    }
+    public static String[] separatexto(String texto,String caracter){
+        String[]asc=texto.split(caracter,0);
+
+        return asc;
+    }
+
+
 }

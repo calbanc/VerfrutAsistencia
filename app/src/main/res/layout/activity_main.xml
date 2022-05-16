@@ -18,8 +18,10 @@
         android:layout_marginRight="8dp"
         android:layout_marginBottom="8dp"
         android:text="INGRESAR"
+        android:background="@drawable/textesquinasredondas"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        android:textColor="#FFFFFF"
         app:layout_constraintStart_toStartOf="parent" />
 
     <com.google.android.material.textfield.TextInputLayout
@@ -31,11 +33,11 @@
         android:layout_marginEnd="8dp"
         android:layout_marginRight="8dp"
         android:layout_marginBottom="8dp"
-        android:background="#ffffff"
 
+        style="@style/LoginTextInputLayoutStyle"
         app:passwordToggleEnabled="true"
-        app:passwordToggleTint="#00000F"
-
+        app:passwordToggleTint="#ffffff"
+        android:background="#31FFFFFF"
         app:layout_constraintBottom_toTopOf="@+id/btningresar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
@@ -47,6 +49,9 @@
             android:imeOptions="actionDone"
             android:inputType="textPassword"
             android:singleLine="true"
+
+            android:textColor="#FFFF"
+            android:textColorHint="#FFFF"
             android:hint="Clave" />
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -56,10 +61,10 @@
         android:layout_marginStart="8dp"
         android:layout_marginLeft="8dp"
         android:layout_marginEnd="8dp"
+        android:background="#31FFFFFF"
         android:layout_marginRight="8dp"
         android:layout_marginBottom="8dp"
-        android:background="#ffffff"
-
+        style="@style/LoginTextInputLayoutStyle"
         app:layout_constraintBottom_toTopOf="@+id/textInputLayout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.6"
@@ -70,6 +75,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Usuario"
+
+            android:textColor="#FFFF"
+            android:textColorHint="#FFFF"
             android:singleLine="true" />
     </com.google.android.material.textfield.TextInputLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
