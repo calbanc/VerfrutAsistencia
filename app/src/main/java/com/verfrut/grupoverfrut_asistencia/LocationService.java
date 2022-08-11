@@ -53,7 +53,7 @@ public class LocationService extends Service implements LocationListener {
 
     @Override
     public int onStartCommand(Intent intent, int flag, int idProcess) {
-
+        onCreate();
         return START_STICKY;
     }
 
@@ -88,22 +88,7 @@ public class LocationService extends Service implements LocationListener {
 
     }
 
-    public Location Localizacion() {
-       try{
-           locationManager = (LocationManager) context.getSystemService(LOCATION_SERVICE);
-           if (locationManager != null) {
-               loc = locationManager
-                       .getLastKnownLocation(LocationManager.GPS_PROVIDER);
-               if (loc != null) {
-                   latitude = loc.getLatitude();
-                   longitude = loc.getLongitude();
-               }
-           }
-       }catch (Exception e ){
 
-       }
-
-    }
 
     private void fn_getlocation() {
         locationManager = (LocationManager) getApplicationContext().getSystemService(LOCATION_SERVICE);
