@@ -233,7 +233,7 @@ public class ASISTENCIA extends AppCompatActivity {
                         if(cr.moveToFirst()){
                             String tipo=cr.getString(0).trim();
                             if(tipo.equals("BUS")){
-                                enviarposicionesservidor();
+                               // enviarposicionesservidor();
                             }
                         }
 
@@ -267,7 +267,7 @@ public class ASISTENCIA extends AppCompatActivity {
                     if(cr.moveToFirst()){
                         String tipo=cr.getString(0).trim();
                         if(tipo.equals("BUS")){
-                            guardaposicion();
+                         //   guardaposicion();
                         }
                     }
 
@@ -460,9 +460,7 @@ public class ASISTENCIA extends AppCompatActivity {
                                         String actualizadaestado="UPDATE POSICIONES SET SW_ENVIADO='1' WHERE ID='"+idmarcacion+"'";
 
                                         db.execSQL(actualizadaestado);
-                                    }else{
                                     }
-
                                 }catch (Exception e){
                                     // Toast.makeText(ASISTENCIA.this,"NO ENVIADO"+e.getMessage(),Toast.LENGTH_LONG).show();
 
@@ -541,9 +539,6 @@ public class ASISTENCIA extends AppCompatActivity {
                                         db.execSQL(actualizadaestado);
 
 
-                                    }else{
-
-
                                     }
 
                                 }catch (Exception e){
@@ -616,6 +611,9 @@ public class ASISTENCIA extends AppCompatActivity {
         }catch (Exception e){
             Toast.makeText(ASISTENCIA.this, "NO HA REGISTRADO UNA ESTACION", Toast.LENGTH_SHORT).show();
         }
+
+        Intent intent=new Intent(getApplicationContext(),LocationService.class);
+        startService(intent);
 
     }
     private void enviarposicionesservidor() {
@@ -740,9 +738,6 @@ public class ASISTENCIA extends AppCompatActivity {
                                         String actualizadaestado="UPDATE MARCACIONES SET SW_ENVIADO='1' WHERE IDMARCACION='"+idmarcacion+"'";
 
                                         db.execSQL(actualizadaestado);
-
-
-                                    }else{
 
 
                                     }

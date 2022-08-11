@@ -4,10 +4,15 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="app/src/main/res/drawable/textesquinasredondas.xml" value="0.2135" />
+        <entry key="app/src/main/res/layout/activity_admin.xml" value="0.3787037037037037" />
+        <entry key="app/src/main/res/layout/activity_administrador.xml" value="0.3787037037037037" />
         <entry key="app/src/main/res/layout/activity_asistencia.xml" value="1.0" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.28603730921424536" />
+        <entry key="app/src/main/res/layout/app_bar_main.xml" value="0.3787037037037037" />
         <entry key="app/src/main/res/layout/dialog_searchable_spinner.xml" value="0.13148148148148148" />
         <entry key="app/src/main/res/layout/fragment_instalacion.xml" value="0.3671794871794872" />
+        <entry key="app/src/main/res/layout/fragment_retiro.xml" value="0.3787037037037037" />
+        <entry key="app/src/main/res/layout/vistalistadoestaciones.xml" value="0.33" />
         <entry key="app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml" value="0.3695" />
       </map>
     </option>

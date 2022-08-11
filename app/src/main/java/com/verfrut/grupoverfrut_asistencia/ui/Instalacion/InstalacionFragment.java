@@ -598,67 +598,9 @@ public class InstalacionFragment extends Fragment {
     }
 
 
-    private void registrarbusremoto(String codbus, String cod_emp, String fecha, String id, String nombre) {
-        progreso = new ProgressDialog(getContext());
-        progreso.setMessage("Registrando instalacion de equipo...");
-        progreso.setCancelable(false);
-        progreso.setCanceledOnTouchOutside(false);
-        progreso.show();
 
 
-        String url=Global.url+"swinstalbus.php?idempresa="+cod_emp+"&&ID="+id+"&&TIPO_ESTACION=BUS"+
-                "&&NOMBRE_ESTACION="+nombre+"&&FECHA_INSTALACION="+fecha+"&&codbus="+codbus;
-        System.out.println(url);
-        cliente.post(url, new AsyncHttpResponseHandler() {
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-                if (statusCode == 200) {
-                    progreso.hide();
 
-                    instalacion(new String(responseBody));
-
-                }
-            }
-            @Override
-            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-                progreso.hide();
-                Toast.makeText(getContext(),"SIN CONEXION",Toast.LENGTH_LONG).show();
-            }
-        });
-
-
-    }
-
-    private void registrarbuslocal(String codbus, String cod_emp, String fecha, String id, String nombre) {
-        progreso = new ProgressDialog(getContext());
-        progreso.setMessage("Registrando instalacion de equipo...");
-        progreso.setCancelable(false);
-        progreso.setCanceledOnTouchOutside(false);
-        progreso.show();
-
-
-        String url=Global.url+"swinstalbus.php?idempresa="+cod_emp+"&&ID="+id+"&&TIPO_ESTACION=BUS"+
-                "&&NOMBRE_ESTACION="+nombre+"&&FECHA_INSTALACION="+fecha+"&&codbus="+codbus;
-        System.out.println(url);
-        cliente.post(url, new AsyncHttpResponseHandler() {
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-                if (statusCode == 200) {
-                    progreso.hide();
-
-                    instalacion(new String(responseBody));
-
-                }
-            }
-            @Override
-            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-                progreso.hide();
-                Toast.makeText(getContext(),"SIN CONEXION",Toast.LENGTH_LONG).show();
-            }
-        });
-
-
-    }
 
 
 
@@ -1092,7 +1034,7 @@ public class InstalacionFragment extends Fragment {
         progreso.setCanceledOnTouchOutside(false);
         progreso.show();
         String url=Global.url+"swretiraequipo.php?ID="+id+"&&FECHA_RETIRO="+fecha;
-        System.out.println(url);
+
 
         cliente.post(url, new AsyncHttpResponseHandler() {
             @Override
@@ -1133,11 +1075,6 @@ public class InstalacionFragment extends Fragment {
             //JSONArray jsonarreglo = new JSONArray(s);
 
             JSONObject objeto=new JSONObject(s);
-
-
-
-
-
 
                 //String mensaje=jsonarreglo.getJSONObject(j).getString("message");
 

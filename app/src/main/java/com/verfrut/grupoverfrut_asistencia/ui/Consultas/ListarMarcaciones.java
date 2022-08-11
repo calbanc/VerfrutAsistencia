@@ -119,10 +119,7 @@ public class ListarMarcaciones extends Fragment {
             @Override
             public void onClick(View v) {
                 String fechas=txtfecha.getText().toString();
-
                 enviardatos(fechas);
-
-               //
             }
         });
 
@@ -276,10 +273,6 @@ public class ListarMarcaciones extends Fragment {
                 Toast.makeText(getContext(),"SIN MARCACIONES",Toast.LENGTH_SHORT).show();
             }
         }
-
-
-
-
 
     }
 

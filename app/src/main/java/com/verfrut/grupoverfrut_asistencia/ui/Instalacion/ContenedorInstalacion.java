@@ -65,7 +65,7 @@ public class ContenedorInstalacion extends Fragment {
         Secciones adapter=new Secciones(getFragmentManager());
 
         adapter.addfragment(new InstalacionFragment(),"Instalar Equipo");
-
+        adapter.addfragment(new RetiroFragment(),"Retirar Equipos");
         viewPager.setAdapter(adapter);
     }
     public void onDestroyView() {

@@ -10,8 +10,8 @@ android {
         targetSdkVersion 30
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-        versionCode 9
-        versionName 'Asistencia 2.3'
+        versionCode 10
+        versionName 'Asistencia 3.0'
     }
 
     buildTypes {

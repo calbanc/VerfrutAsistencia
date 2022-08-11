@@ -1,7 +1,42 @@
 package com.verfrut.grupoverfrut_asistencia.Entidades;
 
 public class Estaciones {
-    String empresa,fecha,nombreempresa;
+    String empresa,fecha,nombreempresa,idestacion,fechainstalacion,fecharetiro,nombreestacion;
+
+
+
+
+    public String getIdestacion() {
+        return idestacion;
+    }
+
+    public void setIdestacion(String idestacion) {
+        this.idestacion = idestacion;
+    }
+
+    public String getFechainstalacion() {
+        return fechainstalacion;
+    }
+
+    public void setFechainstalacion(String fechainstalacion) {
+        this.fechainstalacion = fechainstalacion;
+    }
+
+    public String getFecharetiro() {
+        return fecharetiro;
+    }
+
+    public void setFecharetiro(String fecharetiro) {
+        this.fecharetiro = fecharetiro;
+    }
+
+    public String getNombreestacion() {
+        return nombreestacion;
+    }
+
+    public void setNombreestacion(String nombreestacion) {
+        this.nombreestacion = nombreestacion;
+    }
 
     public Estaciones() {
     }
