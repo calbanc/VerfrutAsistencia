@@ -24,6 +24,7 @@ import com.verfrut.grupoverfrut_asistencia.R;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.nio.channels.FileChannel;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -66,7 +67,7 @@ public class ResetFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
-    Button btnresetmarcaciones,btnresetposiciones,btnexportabd,btnexportarxlsmarcaciones,btnexportarxlsposiciones;
+    Button btnresetmarcaciones,btnresetposiciones,btnexportabd,btnexportarxlsmarcaciones,btnexportarxlsposiciones,btneliminar;
     Session session;
     public ResetFragment() {
         // Required empty public constructor
@@ -109,6 +110,7 @@ public class ResetFragment extends Fragment {
         btnexportabd=vista.findViewById(R.id.btnexportabd);
         btnexportarxlsmarcaciones=vista.findViewById(R.id.btnexportarxlsmarcaciones);
         btnexportarxlsposiciones=vista.findViewById(R.id.btnexportarxlsposiciones);
+        btneliminar=vista.findViewById(R.id.btneliminar);
 
 
 
@@ -158,11 +160,158 @@ public class ResetFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 System.out.println("EXPORTAR BD");
-                exportarbd();
+                backupdDatabase();
+            }
+        });
+        btneliminar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getContext().deleteDatabase("AsistenciaHelper");
             }
         });
 
         return vista;
+    }
+
+    private void backupdDatabase() {
+        String DatabaseName = "RRHH";
+        File sd = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS);
+        File data = Environment.getDataDirectory();
+        FileChannel source=null;
+        FileChannel destination=null;
+        String currentDBPath = "/data/"+ "com.verfrut.grupoverfrut_asistencia" +"/databases/"+DatabaseName ;
+        String backupDBPath = "RRHH";
+        File currentDB = new File(data, currentDBPath);
+        File backupDB = new File(sd, backupDBPath);
+
+        try {
+            source = new FileInputStream(currentDB).getChannel();
+            destination = new FileOutputStream(backupDB).getChannel();
+            destination.transferFrom(source, 0, source.size());
+            source.close();
+            destination.close();
+
+            final AlertDialog dialogBuilder=new AlertDialog.Builder(getActivity()).create();
+            LayoutInflater inflater=getActivity().getLayoutInflater();
+            View dialogview=inflater.inflate(R.layout.dialogcorreo,null);
+
+            final TextInputEditText txtcopiacc =dialogview.findViewById(R.id.txtcopiacc);
+            final TextInputEditText txtcorreo=dialogview.findViewById(R.id.txtcorreo);
+
+            Button btnenviarcorreo=dialogview.findViewById(R.id.btnenviarcorreo);
+            Button btndiagcancelar=dialogview.findViewById(R.id.btndiagcancelar);
+
+
+
+            btndiagcancelar.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    dialogBuilder.dismiss();
+                }
+            });
+
+            btnenviarcorreo.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if(txtcorreo.getText().toString().isEmpty()){
+                        Toast.makeText(getContext(),"DEBE INGRESAR UN CORREO ELECTRONICO",Toast.LENGTH_SHORT).show();
+                    }else{
+                        String correo=txtcorreo.getText().toString();
+                        String copia=txtcopiacc.getText().toString();
+                        enviarcorreobd(correo,copia);
+                        //EnviarEmailBD(correo,copia);
+                        dialogBuilder.dismiss();
+                    }
+                }
+            });
+
+            dialogBuilder.setView(dialogview);
+            dialogBuilder.show();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.out.println("error exportando bd"+e.getMessage());
+        }
+
+
+
+    }
+    private void enviarcorreobd(String correo,String copia) {
+
+
+
+        Global.EmailEnv="app@verfrut.cl";
+        Global.PassEnv="Aplicaciones.8462";
+        Global.CorreoEnvio=correo;
+        Global.CorreoEnvioCC=copia;
+
+
+        String xMensaje="", xAsunto="", xHora, databaseName, CorreoEnvio, CorreoEnvioCC;
+
+        CorreoEnvio=Global.CorreoEnvio;
+        CorreoEnvioCC=Global.CorreoEnvioCC;
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
+        xHora=sdf.format(new Date());
+        xMensaje="SE REALIZO EL ENVIO DE BASE DE DATOS DE CAMPO  DESDE EL APP GRUPO VERFRUT \n"
+                +"Usuario: "+ Global.usuario + "\n "
+                +"Hora de envio: "+ xHora;
+        xAsunto="DATOS CAMPO "+Global.usuario;
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
+        Properties properties = new Properties();
+
+        properties.put("mail.smtp.host", "mail.verfrut.cl");
+        properties.put("mail.smtp.port", "587");
+        properties.put("mail.smtp.socketFactory.port", "465");
+        properties.put("mail.smtp.ssl.trust","mail.verfrut.cl");
+        properties.put("mail.smtp.auth","true");
+        //cargar correos y usuarios
+
+
+        try {
+            session = Session.getDefaultInstance(properties, new Authenticator() {
+                @Override
+                protected PasswordAuthentication getPasswordAuthentication() {
+                    return new PasswordAuthentication(Global.EmailEnv, Global.PassEnv);
+                }
+            });
+            if (session != null) {
+                Message message = new MimeMessage(session);
+                message.setFrom(new InternetAddress(Global.EmailEnv));
+                message.setSubject(xAsunto);
+                message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(CorreoEnvio));
+                message.setRecipients(Message.RecipientType.CC,InternetAddress.parse(CorreoEnvioCC));
+                message.setContent("Datos enviados desde el app ","text/html; charset=utf-8");
+
+
+                BodyPart messageBodyPart = new MimeBodyPart();
+                messageBodyPart.setText(xMensaje);
+                Multipart multipart = new MimeMultipart();
+                multipart.addBodyPart(messageBodyPart);
+                messageBodyPart = new MimeBodyPart();
+                String filename = (Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS)+ "/RRHH");
+
+                DataSource source = new FileDataSource(filename);
+                messageBodyPart.setDataHandler(new DataHandler(source));
+                messageBodyPart.setFileName(filename);
+                multipart.addBodyPart(messageBodyPart);
+                message.setContent(multipart);
+
+                Transport transport = session.getTransport("smtp");
+
+                transport.connect("mail.verfrut.cl", 587, Global.EmailEnv, Global.PassEnv);
+                transport.sendMessage(message, message.getAllRecipients());
+                transport.close();
+                Toast.makeText(getContext(),"BASE DE DATOS EXPORTADA",Toast.LENGTH_LONG).show();
+
+            }
+
+        }catch (Exception e){
+            Toast.makeText(getContext(),"ERROR"+e.getMessage(),Toast.LENGTH_LONG).show();
+
+            //Limpiar(true);
+        }
+
     }
 
     private void guardarexcelmarcaciones() {

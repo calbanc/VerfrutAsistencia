@@ -1,12 +1,28 @@
 apply plugin: 'com.android.application'
 
 android {
+    allprojects {
+        repositories {
+            google()
+            jcenter()
+            maven {
+                url "http://download.dynamsoft.com/maven/dbr/aar"
+            }
+            maven {
+                url "http://download.dynamsoft.com/maven/dce/aar"
+            }
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
     compileSdkVersion 30
     buildToolsVersion "30.0.2"
 
     defaultConfig {
         applicationId 'com.verfrut.grupoverfrut_asistencia'
-        minSdkVersion 16
+        minSdkVersion 24
         targetSdkVersion 30
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -21,6 +37,15 @@ android {
         }
     }
 }
+
+
+repositories {
+    maven { url 'https://jitpack.io' }
+    jcenter()
+    maven { url "https://maven.google.com" }
+}
+
+
 
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
@@ -38,6 +63,10 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
     implementation 'com.loopj.android:android-async-http:1.4.9'
     implementation 'com.google.zxing:core:3.3.0'
+    implementation('com.journeyapps:zxing-android-embedded:4.1.0') { transitive = false }
+
+
+
     implementation files('libs/jxl.jar')
     implementation files('libs/mail.jar')
     implementation files('libs/activation.jar')

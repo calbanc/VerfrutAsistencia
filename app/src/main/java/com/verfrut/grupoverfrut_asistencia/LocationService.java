@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -31,7 +32,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class LocationService extends Service implements LocationListener {
-
+    public static final String gps="gps";
     private Context context = this;
     boolean isGPSEnable = false;
     boolean isNetworkEnable = false;
@@ -46,6 +47,7 @@ public class LocationService extends Service implements LocationListener {
 
     @Override
     public void onCreate() {
+
         mTimer = new Timer();
         mTimer.schedule(new TimerTaskToGetLocation(),45,notify_interval);
         intent = new Intent(str_receiver);
@@ -54,12 +56,28 @@ public class LocationService extends Service implements LocationListener {
     @Override
     public int onStartCommand(Intent intent, int flag, int idProcess) {
         onCreate();
+
+        SharedPreferences preferences = getSharedPreferences(gps, MODE_PRIVATE);
+
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putString("GPS", "true");
+        editor.commit();
         return START_STICKY;
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
+        System.out.println("CERRAR SERVICIO>>>>>>>>>");
+        Log.v("STOP_SERVICE", "DONE");
+
+        SharedPreferences preferences=getSharedPreferences(gps,MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+
+        editor.clear().apply();
+
+        locationManager.removeUpdates(LocationService.this  );
+
     }
 
     @Nullable
@@ -162,56 +180,63 @@ public class LocationService extends Service implements LocationListener {
     }
     private void fn_update(Location location){
 
-        System.out.println("ingresa a metodo fnupdate");
-        AsistenciaHelper cn = new AsistenciaHelper(context, "RRHH", null, 1);
-        SQLiteDatabase db = cn.getWritableDatabase();
-        intent.putExtra("latutide",location.getLatitude()+"");
-        intent.putExtra("longitude",location.getLongitude()+"");
-        location.getLatitude();
-        location.getLongitude();
-        location.getSpeed();
-        DecimalFormat df = new DecimalFormat("#.00");
-        String sLatitud = String.valueOf(location.getLatitude());
-        String sLongitud = String.valueOf(location.getLongitude());
+        SharedPreferences preferences=getSharedPreferences(gps,MODE_PRIVATE);
+        String acces= preferences.getString("GPS","Invitado");
+        System.out.println("PREFERENCIA DE GPS "+acces);
+        if(acces.equals("true")){
+            AsistenciaHelper cn = new AsistenciaHelper(context, "RRHH", null, 1);
+            SQLiteDatabase db = cn.getWritableDatabase();
+            intent.putExtra("latutide",location.getLatitude()+"");
+            intent.putExtra("longitude",location.getLongitude()+"");
+            location.getLatitude();
+            location.getLongitude();
+            location.getSpeed();
+            DecimalFormat df = new DecimalFormat("#.00");
+            String sLatitud = String.valueOf(location.getLatitude());
+            String sLongitud = String.valueOf(location.getLongitude());
 
-        String sVelocidad = String.valueOf(df.format(location.getSpeed() * 3.6));
+            String sVelocidad = String.valueOf(df.format(location.getSpeed() * 3.6));
 
-        if (sVelocidad.equals(",00")) {
+            if (sVelocidad.equals(",00")) {
 
-            sVelocidad = "0.00";
-        }
-        //Toast.makeText(getApplicationContext(),"latitud"+sLatitud,Toast.LENGTH_LONG).show();
-
-
-        String consulta = "SELECT * FROM ESTACION";
-
-        Cursor cr = db.rawQuery(consulta, null);
-        if (cr.moveToFirst()) {
-            String tipo=cr.getString(2).trim();
-            if(tipo.equals("BUS")){
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd"); //dd/MM/yyyy HH:mm:ss
-                String fecha = sdf.format(new Date());
-                SimpleDateFormat hdf = new SimpleDateFormat("HH:mm:ss");
-                String hora = hdf.format(new Date());
-                String idequipo = cr.getString(0);
-                String idmarcacion = idequipo + fecha.replaceAll("-", "") + hora.replaceAll(":", "");
-                String latitud = sLatitud;
-                String longitud = sLongitud;
-                String velocidad = sVelocidad;
-                String versionapp = "Seguimiento";
-                String consultaS="SELECT ID FROM POSICIONES WHERE ID='"+idmarcacion+"' ";
-                System.out.println(consultaS);
-                Cursor cr1=db.rawQuery(consultaS,null);
-                if(cr1.moveToFirst()){
-
-                }else{
-                    String inserta = "INSERT INTO POSICIONES(ID,FECHA,HORA,LATITUD,LONGITUD,VELOCIDAD,ESTACION,VERSIONAPP,SW_ENVIADO) VALUES ('" + idmarcacion + "','" + fecha + "','" + hora + "','" + latitud + "','" + longitud + "','" + velocidad + "','" + idequipo + "','" + versionapp + "','0')";
-                    db.execSQL(inserta);
-                    System.out.println(inserta);
-                }
+                sVelocidad = "0.00";
             }
 
+
+
+            String consulta = "SELECT * FROM ESTACION";
+
+            Cursor cr = db.rawQuery(consulta, null);
+            if (cr.moveToFirst()) {
+                String tipo=cr.getString(2).trim();
+                if(tipo.equals("BUS")){
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd"); //dd/MM/yyyy HH:mm:ss
+                    String fecha = sdf.format(new Date());
+                    SimpleDateFormat hdf = new SimpleDateFormat("HH:mm:ss");
+                    String hora = hdf.format(new Date());
+                    String idequipo = cr.getString(0);
+                    String idmarcacion = idequipo + fecha.replaceAll("-", "") + hora.replaceAll(":", "");
+                    String latitud = sLatitud;
+                    String longitud = sLongitud;
+                    String velocidad = sVelocidad;
+                    String versionapp = "Seguimiento";
+                    String consultaS="SELECT ID FROM POSICIONES WHERE ID='"+idmarcacion+"' ";
+                    System.out.println(consultaS);
+                    Cursor cr1=db.rawQuery(consultaS,null);
+                    if(cr1.moveToFirst()){
+
+                    }else{
+                        String inserta = "INSERT INTO POSICIONES(ID,FECHA,HORA,LATITUD,LONGITUD,VELOCIDAD,ESTACION,VERSIONAPP,SW_ENVIADO) VALUES ('" + idmarcacion + "','" + fecha + "','" + hora + "','" + latitud + "','" + longitud + "','" + velocidad + "','" + idequipo + "','" + versionapp + "','0')";
+                        db.execSQL(inserta);
+
+                        System.out.println(inserta);
+                    }
+                }
+
+            }
+            sendBroadcast(intent);
         }
-        sendBroadcast(intent);
+
+
     }
 }

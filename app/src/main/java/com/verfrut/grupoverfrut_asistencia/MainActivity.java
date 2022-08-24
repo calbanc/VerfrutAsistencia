@@ -94,7 +94,7 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(midintent);
                 super.finish();
             }else{
-                Intent midintent = new Intent(MainActivity.this, ASISTENCIA.class);
+                Intent midintent = new Intent(MainActivity.this, PrincipalViajes.class);
                 Bundle mibundle = new Bundle();
 
 
@@ -174,7 +174,7 @@ public class MainActivity extends AppCompatActivity {
                 }else{
                     System.out.println("usuario admasis");
 
-                    Intent midintent = new Intent(MainActivity.this, ASISTENCIA.class);
+                    Intent midintent = new Intent(MainActivity.this, PrincipalViajes.class);
                     Bundle mibundle = new Bundle();
 
                     SharedPreferences preferences = getSharedPreferences(prefencia, MODE_PRIVATE);

@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.ContentUris;
@@ -66,9 +67,11 @@ public class ASISTENCIA extends AppCompatActivity {
     SurfaceView svqr;
     private AsyncHttpClient cliente;
     final Handler handler = new Handler();
-    MediaPlayer mp;
+    MediaPlayer mp,mpstop;
     ImageView imgsalir;
     ProgressDialog progreso;
+
+
     public static final String prefencia="prefencia";
 
     @Override
@@ -88,10 +91,12 @@ public class ASISTENCIA extends AppCompatActivity {
         imgsalir=findViewById(R.id.imgsalir);
         getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         mp=MediaPlayer.create(ASISTENCIA.this,R.raw.beep);
+        mpstop=MediaPlayer.create(ASISTENCIA.this,R.raw.beepwarning);
         cliente=new AsyncHttpClient();
         cliente.setTimeout(100000);
-
-
+        Bundle extras=getIntent().getExtras();
+        String idviaje=extras.getString("idviaje");
+        System.out.println("id viaje"+idviaje);
         try{
             cargarequipoexistente();
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd"); //dd/MM/yyyy HH:mm:ss
@@ -127,6 +132,7 @@ public class ASISTENCIA extends AppCompatActivity {
         imgsalir.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
                 AlertDialog.Builder builder = new AlertDialog.Builder(ASISTENCIA.this);
                 builder.setTitle("CERRAR SESION")
                         .setMessage("ESTA SEGURO DE CERRAR SESION")
@@ -212,7 +218,7 @@ public class ASISTENCIA extends AppCompatActivity {
             handler.postDelayed(new Runnable() {
                 public void run() {
                     if(isNetDisponible()) {
-                        enviardatosaservidor();
+                    //    enviardatosaservidor();
                     }
                     handler.postDelayed(this, 30000);
                 }
@@ -220,7 +226,7 @@ public class ASISTENCIA extends AppCompatActivity {
             }, 30000);
 
 
-           handler.postDelayed(new Runnable() {
+/*           handler.postDelayed(new Runnable() {
                 public void run() {
 
                     if(isNetDisponible()) {
@@ -244,7 +250,7 @@ public class ASISTENCIA extends AppCompatActivity {
                     handler.postDelayed(this, 40000);
                 }
 
-            }, 40000);
+            }, 40000);*/
 
 
 
@@ -292,6 +298,11 @@ public class ASISTENCIA extends AppCompatActivity {
     }
 
     private void mostrarformulario() {
+
+
+
+
+
         final AlertDialog dialogBuilder=new AlertDialog.Builder(ASISTENCIA.this).create();
         LayoutInflater inflater=ASISTENCIA.this.getLayoutInflater();
         View dialogview=inflater.inflate(R.layout.dialogreportepasajeros,null);
@@ -365,9 +376,28 @@ public class ASISTENCIA extends AppCompatActivity {
         String fecha = sdf.format(new Date());
         SimpleDateFormat hdf=new SimpleDateFormat("HH:mm:ss");
         String hora=hdf.format(new Date());
+        String latitud=txtlatitud.getText().toString();
+        String longitud=txtlongitud.getText().toString();
 
+        Bundle extras=getIntent().getExtras();
+        String idviaje=extras.getString("idviaje");
 
+        Intent intent=new Intent(getApplicationContext(),LocationService.class);
+        stopService(intent);
 
+        AsistenciaHelper cn=new AsistenciaHelper(ASISTENCIA.this,"RRHH",null,1);
+        final SQLiteDatabase db=cn.getWritableDatabase();
+
+        String consultaantesretorno="SELECT ID FROM VIAJES WHERE ID='"+idviaje+"' AND FECHAINICIORETORNO IS NOT NULL";
+        Cursor cr=db.rawQuery(consultaantesretorno,null);
+        String update="";
+        if(cr.moveToFirst()){
+             update ="UPDATE VIAJES SET FECHATERMINORETORNO='"+fecha+"' , HORATERMINORETORNO='"+hora+"' , LATITUDTERMINORETORNO='"+latitud+"' , LONGITUDTERMINORETORNO='"+longitud+"' WHERE ID='"+idviaje+"' ";
+        }else{
+             update ="UPDATE VIAJES SET FECHATERMINO='"+fecha+"' , HORATERMINO='"+hora+"' , LATITUDTERMINO='"+latitud+"' , LONGITUDTERMINO='"+longitud+"' WHERE ID='"+idviaje+"' ";
+        }
+
+        db.execSQL(update);
         String url=Global.url+"swinsertadotacionpasajeros.php?Pasajeros="+cantidad+"&Fecha="+fecha+"&Hora="+hora+"&IdEstacion="+idequipo+"&Epp="+cantidadepp;
 
         cliente.post(url, new AsyncHttpResponseHandler() {
@@ -379,7 +409,7 @@ public class ASISTENCIA extends AppCompatActivity {
                     try{
                         JSONArray jsonArray=new JSONArray(enviar);
                         String respuesta=jsonArray.getJSONObject(0).getString("id");
-                        System.out.println(respuesta+" RESPUESTA DEL SERVIDOR");
+
                         if(respuesta.equals("REGISTRA")){
 
                             AlertDialog.Builder builder = new AlertDialog.Builder(ASISTENCIA.this);
@@ -420,10 +450,46 @@ public class ASISTENCIA extends AppCompatActivity {
         });
 
 
+        String url2=Global.url2+"wspersonalrestriccion.php?usuario="+Global.usuario+"&clave="+Global.clave+"&COD_PAIS=PE";
+        cliente.post(url2, new AsyncHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+                if(statusCode==200){
+                    respuesta(new String(responseBody));
+                }
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+
+            }
+        });
 
 
 
 
+
+
+    }
+
+    private void respuesta(String s) {
+        AsistenciaHelper cn=new AsistenciaHelper(ASISTENCIA.this,"RRHH",null,1);
+        final SQLiteDatabase db=cn.getWritableDatabase();
+        db.execSQL("DELETE FROM PERSONAL_RESTRICCIONES");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd"); //dd/MM/yyyy HH:mm:ss
+        String fecha = sdf.format(new Date());
+
+        try{
+            JSONArray jsonArray=new JSONArray(s);
+            for(int i=0;i<jsonArray.length();i++){
+                String dni=jsonArray.getJSONObject(i).getString("RutTrabajador");
+                String insert="INSERT INTO PERSONAL_RESTRICCIONES (DNI,FECHA) VALUES('"+dni+"','"+fecha+"')";
+                db.execSQL(insert);
+
+            }
+        }catch (Exception e){
+
+        }
     }
 
 
@@ -510,7 +576,7 @@ public class ASISTENCIA extends AppCompatActivity {
 
                     Process p = java.lang.Runtime.getRuntime().exec("ping -c 1 192.168.60.8");
 
-                    int val           = p.waitFor();
+                    int val= p.waitFor();
                     boolean reachable = (val == 0);
 
                     if(reachable=true){
@@ -785,6 +851,7 @@ public class ASISTENCIA extends AppCompatActivity {
         }
         return connected;
     }
+
     private void locationStart() {
         try{
             LocationManager mlocManager = (LocationManager) ASISTENCIA.this.getSystemService(Context.LOCATION_SERVICE);
@@ -897,27 +964,56 @@ public class ASISTENCIA extends AppCompatActivity {
             String versionapp="AppRemu2.2";
 
 
-            String consultaantes="SELECT * FROM MARCACIONES WHERE DNI='"+dni+"' and FECHA='"+fecha+"'  and HORA BETWEEN TIME('"+hora+"','-120 seconds')  AND '"+hora+"' ";
-            Cursor cr1=db.rawQuery(consultaantes,null);
-            if(cr1.moveToFirst()){
-                mp.start();
-                txtmensaje.setText("MARCACION YA REGISTRADA");
+
+
+            String restriccion="SELECT * FROM PRESONAL_RESTRICCIONES WHERE DNI='"+dni+"' ";
+            Cursor cr2=db.rawQuery(restriccion,null);
+            if(cr2.moveToFirst()){
+                String consultaantes="SELECT * FROM MARCACIONES WHERE DNI='"+dni+"' and FECHA='"+fecha+"'  and HORA BETWEEN TIME('"+hora+"','-120 seconds')  AND '"+hora+"' ";
+                Cursor cr1=db.rawQuery(consultaantes,null);
+                if(cr1.moveToFirst()){
+                    mpstop.start();
+                    txtmensaje.setText("PERSONAL CON RESTRICCION");
+                }else{
+
+                    String insertaregistro="INSERT INTO MARCACIONES (DNI,FECHA,HORA,ESTACION,LATITUD,LONGITUD,IDMARCACION,VERSIONAPP,SW_RESTRICCION,SW_ENVIADO)" +
+                            " VALUES ('"+dni+"','"+fecha+"','"+hora+"','"+idequipo+"','"+latitud+"','"+longitud+"','"+idmarcacion+"','"+versionapp+"','1','"+swenviado+"') ";
+
+                    db.execSQL(insertaregistro);
+                    mpstop.start();
+                    txtmensaje.setText("PERSONAL CON RESTRICCION");
+
+                    String consulta="SELECT COUNT(DISTINCT(IDMARCACION)) FROM MARCACIONES WHERE FECHA='"+fecha+"'";
+
+                    Cursor cr=db.rawQuery(consulta,null);
+                    if(cr.moveToNext()){
+                        txtcantidad.setText(cr.getString(0));
+
+                    }
+                }
             }else{
-                String insertaregistro="INSERT INTO MARCACIONES (DNI,FECHA,HORA,ESTACION,LATITUD,LONGITUD,IDMARCACION,VERSIONAPP,SW_ENVIADO)" +
-                        " VALUES ('"+dni+"','"+fecha+"','"+hora+"','"+idequipo+"','"+latitud+"','"+longitud+"','"+idmarcacion+"','"+versionapp+"','"+swenviado+"') ";
+                String consultaantes="SELECT * FROM MARCACIONES WHERE DNI='"+dni+"' and FECHA='"+fecha+"'  and HORA BETWEEN TIME('"+hora+"','-120 seconds')  AND '"+hora+"' ";
+                Cursor cr1=db.rawQuery(consultaantes,null);
+                if(cr1.moveToFirst()){
+                    mp.start();
+                    txtmensaje.setText("MARCACION YA REGISTRADA");
+                }else{
+                    String insertaregistro="INSERT INTO MARCACIONES (DNI,FECHA,HORA,ESTACION,LATITUD,LONGITUD,IDMARCACION,VERSIONAPP,SW_ENVIADO)" +
+                            " VALUES ('"+dni+"','"+fecha+"','"+hora+"','"+idequipo+"','"+latitud+"','"+longitud+"','"+idmarcacion+"','"+versionapp+"','"+swenviado+"') ";
 
-                db.execSQL(insertaregistro);
-                mp.start();
-                txtmensaje.setText("MARCACION REGISTRADA");
+                    db.execSQL(insertaregistro);
+                    mp.start();
+                    txtmensaje.setText("MARCACION REGISTRADA");
+                    String consulta="SELECT COUNT(DISTINCT(IDMARCACION)) FROM MARCACIONES WHERE FECHA='"+fecha+"'";
+                    Cursor cr=db.rawQuery(consulta,null);
+                    if(cr.moveToNext()){
+                        txtcantidad.setText(cr.getString(0));
 
-                String consulta="SELECT COUNT(DISTINCT(IDMARCACION)) FROM MARCACIONES WHERE FECHA='"+fecha+"'";
-
-                Cursor cr=db.rawQuery(consulta,null);
-                if(cr.moveToNext()){
-                    txtcantidad.setText(cr.getString(0));
-
+                    }
                 }
             }
+
+
         }catch (Exception e){
 
         }

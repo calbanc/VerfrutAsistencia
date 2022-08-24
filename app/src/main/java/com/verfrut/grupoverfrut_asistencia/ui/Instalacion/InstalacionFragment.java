@@ -427,7 +427,9 @@ public class InstalacionFragment extends Fragment {
         dialog=new Dialog(getContext());
         dialog.setContentView(R.layout.dialog_searchable_spinner);
 
-        dialog.getWindow().setLayout(800,800);
+        int width = (int) (getResources().getDisplayMetrics().widthPixels * 0.80);
+        int height = (int) (getResources().getDisplayMetrics().heightPixels * 0.70);
+        dialog.getWindow().setLayout(width, height);
         dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         EditText editText=dialog.findViewById(R.id.edit_text);
         ListView listView=dialog.findViewById(R.id.list_view);
@@ -529,7 +531,9 @@ public class InstalacionFragment extends Fragment {
         dialog=new Dialog(getContext());
         dialog.setContentView(R.layout.dialog_searchable_spinner);
 
-        dialog.getWindow().setLayout(800,800);
+        int width = (int) (getResources().getDisplayMetrics().widthPixels * 0.80);
+        int height = (int) (getResources().getDisplayMetrics().heightPixels * 0.70);
+        dialog.getWindow().setLayout(width, height);
         dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         EditText editText=dialog.findViewById(R.id.edit_text);
         ListView listView=dialog.findViewById(R.id.list_view);
@@ -640,7 +644,9 @@ public class InstalacionFragment extends Fragment {
         dialog=new Dialog(getContext());
         dialog.setContentView(R.layout.dialog_searchable_spinner);
 
-        dialog.getWindow().setLayout(800,800);
+        int width = (int) (getResources().getDisplayMetrics().widthPixels * 0.80);
+        int height = (int) (getResources().getDisplayMetrics().heightPixels * 0.70);
+        dialog.getWindow().setLayout(width, height);
         dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         EditText editText=dialog.findViewById(R.id.edit_text);
         ListView listView=dialog.findViewById(R.id.list_view);
@@ -747,7 +753,9 @@ public class InstalacionFragment extends Fragment {
         dialog=new Dialog(getContext());
         dialog.setContentView(R.layout.dialog_searchable_spinner);
 
-        dialog.getWindow().setLayout(800,800);
+        int width = (int) (getResources().getDisplayMetrics().widthPixels * 0.80);
+        int height = (int) (getResources().getDisplayMetrics().heightPixels * 0.70);
+        dialog.getWindow().setLayout(width, height);
         dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         EditText editText=dialog.findViewById(R.id.edit_text);
         ListView listView=dialog.findViewById(R.id.list_view);
@@ -855,7 +863,9 @@ public class InstalacionFragment extends Fragment {
         dialog=new Dialog(getContext());
         dialog.setContentView(R.layout.dialog_searchable_spinner);
 
-        dialog.getWindow().setLayout(800,800);
+        int width = (int) (getResources().getDisplayMetrics().widthPixels * 0.80);
+        int height = (int) (getResources().getDisplayMetrics().heightPixels * 0.70);
+        dialog.getWindow().setLayout(width, height);
         dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         EditText editText=dialog.findViewById(R.id.edit_text);
         ListView listView=dialog.findViewById(R.id.list_view);
@@ -967,7 +977,9 @@ public class InstalacionFragment extends Fragment {
         dialog=new Dialog(getContext());
         dialog.setContentView(R.layout.dialog_searchable_spinner);
 
-        dialog.getWindow().setLayout(800,800);
+        int width = (int) (getResources().getDisplayMetrics().widthPixels * 0.80);
+        int height = (int) (getResources().getDisplayMetrics().heightPixels * 0.70);
+        dialog.getWindow().setLayout(width, height);
         dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         EditText editText=dialog.findViewById(R.id.edit_text);
         ListView listView=dialog.findViewById(R.id.list_view);
